@@ -31,6 +31,13 @@ public class ArbolRedBlack {
 		    return a.hIzquierdo;
         }
     }
+    public NodoRB hermano(NodoRB nodo) {
+        if (nodo == nodo.padre.hIzquierdo) {
+            return nodo.padre.hDerecho;
+        } else {
+            return nodo.padre.hIzquierdo;
+        }
+    }
 
     //Inserciones
     public void insertar(int valor) {
@@ -158,12 +165,13 @@ public class ArbolRedBlack {
         nodo.padre = aux;
     }
 
+    //Busquedas (quedo igual)
     public NodoRB buscar(int valor) {
         return buscarRec(raiz, valor);
     }
 
     private NodoRB buscarRec(NodoRB nodo, int valor) {
-        if (nodo == null || nodo.valor == valor) {
+        if (nodo == nil || nodo.valor == valor) {
             return nodo;
         }
 
@@ -174,34 +182,115 @@ public class ArbolRedBlack {
         }
     }
 
-    public void eliminar(int valor) {
-        raiz = eliminarRec(raiz, valor);
-    }
+    //Eliminacion
 
-    private NodoRB eliminarRec(NodoRB nodo, int valor) {
-        if (nodo == null) {
-            return null;
+    public void eliminar(int valor) { //alch se lo pedi a claude, despues lo checo
+        NodoRB z = buscar(valor);
+        if (z == nil) {
+            return;
         }
 
-        if (valor < nodo.valor) {
-            nodo.hIzquierdo = eliminarRec(nodo.hIzquierdo, valor);
-        } else if (valor > nodo.valor) {
-            nodo.hDerecho = eliminarRec(nodo.hDerecho, valor);
-        } else {
-            if (nodo.hIzquierdo == null) {
-                return nodo.hDerecho;
-            } else if (nodo.hDerecho == null) {
-                return nodo.hIzquierdo;
+        NodoRB y = z;
+        if (z.hIzquierdo != nil && z.hDerecho != nil) {
+            y = z.hDerecho;
+            while (y.hIzquierdo != nil) {
+                y = y.hIzquierdo;
             }
-
-            nodo.valor = valorMinimo(nodo.hDerecho);
-            nodo.hDerecho = eliminarRec(nodo.hDerecho, nodo.valor);
+            z.valor = y.valor;
         }
-        return nodo;
+
+        NodoRB hijo = (y.hIzquierdo != nil) ? y.hIzquierdo : y.hDerecho;
+
+        hijo.padre = y.padre;
+        if (y.padre == nil) {
+            raiz = hijo;
+        } else if (y == y.padre.hIzquierdo) {
+            y.padre.hIzquierdo = hijo;
+        } else {
+            y.padre.hDerecho = hijo;
+        }
+
+        if (!y.rojo) {
+            if (hijo.rojo) {
+                hijo.rojo = false;
+            } else {
+                eliminarCaso1(hijo);
+            }
+        }
+
+        nil.padre = nil;
     }
 
+    public void eliminarCaso1(NodoRB nodo) {
+        if (nodo.padre != nil) {
+            eliminarCaso2(nodo);
+        }
+    }
+
+    public void eliminarCaso2(NodoRB nodo) {
+        NodoRB hermano = hermano(nodo);
+        if (hermano.rojo) {
+            nodo.padre.rojo = true;
+            hermano.rojo = false;
+            if (nodo == nodo.padre.hIzquierdo) {
+                rotarIzquierda(nodo.padre);
+            } else {
+                rotarDerecha(nodo.padre);
+            }
+        }
+        eliminarCaso3(nodo);
+    }
+
+    public void eliminarCaso3(NodoRB nodo) {
+        NodoRB hermano = hermano(nodo);
+        if (!nodo.padre.rojo && !hermano.rojo && !hermano.hIzquierdo.rojo && !hermano.hDerecho.rojo) {
+            hermano.rojo = true;
+            eliminarCaso1(nodo.padre);
+        } else {
+            eliminarCaso4(nodo);
+        }
+    }
+
+    public void eliminarCaso4(NodoRB nodo) {
+        NodoRB hermano = hermano(nodo);
+        if (nodo.padre.rojo && !hermano.rojo && !hermano.hIzquierdo.rojo && !hermano.hDerecho.rojo) {
+            hermano.rojo = true;
+            nodo.padre.rojo = false;
+        } else {
+            eliminarCaso5(nodo);
+        }
+    }
+
+    public void eliminarCaso5(NodoRB nodo) {
+        NodoRB hermano = hermano(nodo);
+        if (nodo == nodo.padre.hIzquierdo && !hermano.rojo && hermano.hIzquierdo.rojo && !hermano.hDerecho.rojo) {
+            hermano.rojo = true;
+            hermano.hIzquierdo.rojo = false;
+            rotarDerecha(hermano);
+        } else if (nodo == nodo.padre.hDerecho && !hermano.rojo && !hermano.hIzquierdo.rojo && hermano.hDerecho.rojo) {
+            hermano.rojo = true;
+            hermano.hDerecho.rojo = false;
+            rotarIzquierda(hermano);
+        }
+        eliminarCaso6(nodo);
+    }
+
+    public void eliminarCaso6(NodoRB nodo) {
+        NodoRB hermano = hermano(nodo);
+        hermano.rojo = nodo.padre.rojo;
+        nodo.padre.rojo = false;
+        if (nodo == nodo.padre.hIzquierdo) {
+            hermano.hDerecho.rojo = false;
+            rotarIzquierda(nodo.padre);
+        } else {
+            hermano.hIzquierdo.rojo = false;
+            rotarDerecha(nodo.padre);
+        }
+    }
+
+   
     private int valorMinimo(NodoRB nodo) {
-        while (nodo.hIzquierdo != null) {
+        while (nodo.hIzquierdo != nil) {
             nodo = nodo.hIzquierdo;
         }
         return nodo.valor;
@@ -221,7 +310,7 @@ public class ArbolRedBlack {
 
 
     public void preorden(NodoRB nodo) {
-        if (nodo == null) {
+        if (nodo == nil) {
             return;
         }
         System.out.print(nodo.valor + " ");
@@ -240,7 +329,7 @@ public class ArbolRedBlack {
     }
 
     public void imprimirArbol() {
-        if (raiz == null) {
+        if (raiz == nil) {
             System.out.println("El arbol esta vacio.");
             return;
         }
@@ -257,11 +346,11 @@ public class ArbolRedBlack {
                 NodoRB actual = queue.poll();
                 System.out.print("[" + actual.valor + "] ");
 
-                if (actual.hIzquierdo != null) {
+                if (actual.hIzquierdo != nil) {
                     queue.add(actual.hIzquierdo);
                     System.out.print("(Izq: " + actual.hIzquierdo.valor + ") ");
                 }
-                if (actual.hDerecho != null) {
+                if (actual.hDerecho != nil) {
                     queue.add(actual.hDerecho);
                     System.out.print("(Der: " + actual.hDerecho.valor + ") ");
                 }
