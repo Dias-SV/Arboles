@@ -17,10 +17,10 @@ public class ArbolRedBlack {
 
     //Nodos auxiliares
     public NodoRB abuelo(NodoRB nodo) {
-        if ((nodo != null) && (nodo.padre != null)) {
+        if ((nodo != nil) && (nodo.padre != nil)) {
 		    return nodo.padre.padre;
         } else {
-		    return null;
+		    return nil;
         }
     }
     public NodoRB tio(NodoRB nodo) {
@@ -111,7 +111,7 @@ public class ArbolRedBlack {
 		    rotarDerecha(nodo.padre);
 		    nodo = nodo.hDerecho;
 	    }
-	    insercion_caso5(nodo);
+	    insercionCaso5(nodo);
     }
 
     public void insercionCaso5(NodoRB nodo) {
@@ -299,7 +299,7 @@ public class ArbolRedBlack {
 
 
     public void inorden(NodoRB nodo) {
-        if (nodo == null) {
+        if (nodo == nil) {
             return;
         }
         inorden(nodo.hIzquierdo);
@@ -320,7 +320,7 @@ public class ArbolRedBlack {
 
 
     public void posorden(NodoRB nodo) {
-        if (nodo == null) {
+        if (nodo == nil) {
             return;
         }
         posorden(nodo.hIzquierdo);
