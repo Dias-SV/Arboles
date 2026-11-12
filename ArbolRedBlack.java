@@ -184,33 +184,39 @@ public class ArbolRedBlack {
 
     //Eliminacion
 
-    public void eliminar(int valor) { //alch se lo pedi a claude, despues lo checo
-        NodoRB z = buscar(valor);
-        if (z == nil) {
+    public void eliminar(int valor) { 
+        NodoRB nodo = buscar(valor);
+        if (nodo == nil) {
+            System.out.println("No hay un nodo con este valor");
             return;
         }
 
-        NodoRB y = z;
-        if (z.hIzquierdo != nil && z.hDerecho != nil) {
-            y = z.hDerecho;
-            while (y.hIzquierdo != nil) {
-                y = y.hIzquierdo;
+        NodoRB auxiliar = nil;
+        if (nodo.hIzquierdo != nil && nodo.hDerecho != nil) {
+            auxiliar = nodo.hDerecho;
+            while (auxiliar.hIzquierdo != nil) { //agarra el nodo hasta la izquierda del subarbol derecho
+                auxiliar = auxiliar.hIzquierdo;
             }
-            z.valor = y.valor;
+            nodo.valor = auxiliar.valor;
         }
 
-        NodoRB hijo = (y.hIzquierdo != nil) ? y.hIzquierdo : y.hDerecho;
-
-        hijo.padre = y.padre;
-        if (y.padre == nil) {
-            raiz = hijo;
-        } else if (y == y.padre.hIzquierdo) {
-            y.padre.hIzquierdo = hijo;
+        NodoRB hijo = nil;
+        if (auxiliar.hIzquierdo != nil) {
+            hijo = auxiliar.hIzquierdo;
         } else {
-            y.padre.hDerecho = hijo;
+            hijo = auxiliar.hDerecho;
         }
 
-        if (!y.rojo) {
+        hijo.padre = auxiliar.padre;
+        if (auxiliar.padre == nil) {
+            raiz = hijo;
+        } else if (auxiliar == auxiliar.padre.hIzquierdo) {
+            auxiliar.padre.hIzquierdo = hijo;
+        } else {
+            auxiliar.padre.hDerecho = hijo;
+        }
+
+        if (!auxiliar.rojo) {
             if (hijo.rojo) {
                 hijo.rojo = false;
             } else {
@@ -288,15 +294,6 @@ public class ArbolRedBlack {
         }
     }
 
-   
-    private int valorMinimo(NodoRB nodo) {
-        while (nodo.hIzquierdo != nil) {
-            nodo = nodo.hIzquierdo;
-        }
-        return nodo.valor;
-    }
-
-
 
     public void inorden(NodoRB nodo) {
         if (nodo == nil) {
@@ -344,7 +341,7 @@ public class ArbolRedBlack {
 
             while (nivelTamano > 0) {
                 NodoRB actual = queue.poll();
-                System.out.print("[" + actual.valor + "] ");
+                System.out.print("[" + actual.valor + "] Color: " + (actual.rojo ? "Rojo" : "Negro"));
 
                 if (actual.hIzquierdo != nil) {
                     queue.add(actual.hIzquierdo);
