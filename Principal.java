@@ -43,46 +43,83 @@ public class Principal {
     }
 
 
-    public static void arbolAVL(){
+    public static void arbolAVL() {
         int opcion;
         int valor;
         ArbolAVL arbol = null;
         Scanner entrada = new Scanner(System.in);
 
         do {
-            System.out.println("1. Agregar clave");
+            System.out.println("\n1. Agregar clave");
             System.out.println("2. Buscar un valor");
             System.out.println("3. Eliminar clave");
             System.out.println("4. Mostrar arbol");
             System.out.println("0. Salir");
-            System.out.print("Opcion:");
+            System.out.print("Opcion: ");
             opcion = entrada.nextInt();
             entrada.nextLine();
 
             switch (opcion) {
                 case 1:
-                    System.out.println("Inserte el valor a agregar");
+                    if (arbol == null) 
+                    {
+                       arbol = new ArbolAVL();
+                    }
+                    System.out.println("Inserte el valor a agregar:");
                     valor = entrada.nextInt();
+                    arbol.insertar(valor);
                     break;
 
                 case 2:
-                    System.out.println("Inserte el valor a buscar");
-                    valor = entrada.nextInt();
+                    if (arbol == null) 
+                    {
+                        System.out.println("El arbol aun no ha sido creado, agrega una clave primero");
+                    } 
+                    else 
+                    {
+                        System.out.println("Inserte el valor a buscar:");
+                        valor = entrada.nextInt();
+                        NodoArbolAVL encontrado = arbol.buscar(valor);
+                        if (encontrado != null) 
+                        {
+                            System.out.println("Valor " + encontrado.valor + " encontrado en el arbol");
+                        } 
+                        else 
+                        {
+                            System.out.println("El valor " + valor + " no se encuentra en el arbol");
+                        }
+                    }
                     break;
 
                 case 3:
-                    System.out.println("Inserte el valor a eliminar");
-                    valor = entrada.nextInt();
+                    if (arbol == null) 
+                    {
+                        System.out.println("El arbol aun no ha sido creado, agrega una clave primero");
+                    } 
+                    else 
+                    {
+                        System.out.println("Inserte el valor a eliminar:");
+                        valor = entrada.nextInt();
+                        arbol.eliminar(valor);
+                    }
                     break;
 
                 case 4:
-                    System.out.println("Estado actual del arbol");
+                    if (arbol == null) 
+                    {
+                        System.out.println("El arbol aun no ha sido creado, agrega una clave primero");
+                    } 
+                    else 
+                    {
+                        System.out.println("Estado actual del arbol:");
+                        arbol.imprimirArbol();
+                    }
                     break;
 
                 case 0:
                     System.out.println("Cerrando programa...");
                     break;
-            
+
                 default:
                     System.out.println("Opcion invalida");
                     break;
