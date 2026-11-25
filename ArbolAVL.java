@@ -35,7 +35,7 @@ public class ArbolAVL
     {
         if (this.raiz == null) 
         {
-            System.out.println("El arbol esta vacio.");
+            System.out.println("El arbol está vacío.");
             return;
         }
 
